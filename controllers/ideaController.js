@@ -1,5 +1,6 @@
 //For Register Page
 // const dashboardView = (req, res) => {
+const fs = require('fs');
 
 const { getAllIdeaQuery, createIdeaQuery } = require("../queries/ideaQuery");
 
@@ -14,6 +15,7 @@ const { getAllIdeaQuery, createIdeaQuery } = require("../queries/ideaQuery");
 const getAllIdea = async(req, res) => {
     try {
         // let { group_name, group_type, group_member_id } = req.body
+        console.log(req.cookie);
         const response = await getAllIdeaQuery()
         .then((resp) => {
             // res.setHeader('Access-Control-Allow-Credentials', true)
@@ -30,14 +32,23 @@ const getAllIdea = async(req, res) => {
 const createIdea = async(req, res) => {
     try {
         // let { name, image, author,description } = req.body
-        console.log(req.body.body)
-        // console.log(req)
-        const response = await createIdeaQuery(req.body.body)
-        .then((resp) => {
-            res.set("Access-Control-Allow-Origin", "*");
-            res.status(200).json(resp.data);
+        console.log(req.body)
+        console.log("files = ",req.files);
+        const fileContent = req.files[0].buffer;
+
+        await fs.writeFile(`./uploads/${req.files[0].originalname}`,fileContent, (err) => {
+          if (err) throw err;
+          console.log('File created successfully.');
         });
-        
+
+        const response = await createIdeaQuery(req.body,req.files[0]);
+
+        await fs.unlink(`./uploads/${req.files[0].originalname}`, (err) => {
+            if (err) throw err;
+            console.log('File created successfully.');
+          });
+       
+        res.status(200).json(response);
     } catch (error) {
         console.log(error);
     }

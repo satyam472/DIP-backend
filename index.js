@@ -3,13 +3,15 @@ const app = express();
 const cors = require('cors')
 const cookieParser = require("cookie-parser");
 const session = require('express-session');
-const fileUpload = require('express-fileupload');
-app.use(fileUpload());
+const bodyParser = require('body-parser')
+const fs = require('fs');
 const MongoDBStore = require('connect-mongodb-session')(session);
+
 
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
+app.use(bodyParser.urlencoded({extended:true}));
 
 const mongoose = require('mongoose');
 const dotenv = require("dotenv");

@@ -3,7 +3,6 @@ const Provider = require('@truffle/hdwallet-provider');
 const abi = require("./abi")
 const dotenv = require("dotenv");
 
-
 dotenv.config();
 var address = "0xA404C8849C20997EE4ba3A4709976d7Aa3286398";
 var privatekey = process.env.PRIVATE_KEY;

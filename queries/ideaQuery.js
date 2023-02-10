@@ -2,7 +2,7 @@ const { uploadToIpfs } = require("../helpers/ipfs");
 const IdeaModel = require("../models/ideaModel");
 const { createIdeaOnBlockchain, getNumOfIdeas, getIdeaFromBlockchain } = require("../helpers/web3")
 const storeFiles = require("../helpers/web3Storage-test")
-
+const lighthouse = require('@lighthouse-web3/sdk');
 const getAllIdeaQuery = async() => {
     try {
         // const response = await IdeaModel.find().project({ name: 1 });
@@ -29,12 +29,15 @@ const getAllIdeaQuery = async() => {
     }
 }
 
-const createIdeaQuery = async(body) => {
+const createIdeaQuery = async(body,file) => {
     try {
-        console.log(body)
-        const cid = await storeFiles();
-        console.log(cid)
-        const imageUrl = "https://ipfs.io/ipfs/" + cid + "/" + "1.png";
+        console.log(body,"bodyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy")
+        console.log(file)
+        // const cid = await storeFiles();
+        const apiKey = process.env.API_KEY; 
+        const ideaFilePath = 'C:/Users/Satyam/Desktop/DIP-BACKEND-IDEA/DIP-backend/uploads/' + file.originalname;
+        const ideaImage = await lighthouse.upload(ideaFilePath, apiKey);
+        const imageUrl = `https://gateway.lighthouse.storage/ipfs/${ideaImage.data.Hash}`;
         console.log(imageUrl)
         let doc = { 
             name: body.name,
@@ -43,13 +46,7 @@ const createIdeaQuery = async(body) => {
             author: body.author, 
         }  
         console.log("before resp")
-        const resp = await createIdeaOnBlockchain(doc ,function (err, small) {
-            if (err) {console.log(err);}
-            else{
-                console.log(small);
-            }
-
-          });
+        await createIdeaOnBlockchain(doc);
         console.log("after resp")
         return Promise.resolve({ status: true, data:resp, message: `All Idea response` });
     }

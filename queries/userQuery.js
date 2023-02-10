@@ -10,8 +10,7 @@ const loginUserQuery = async(req,body) => {
         if(user){
             let checkPassword = decryptPassword(body.password,user.password);
             if(checkPassword){
-                req.session.user = user
-                
+                req.session.user = user; 
                 req.session.save(err => {
                     if(err){
                         console.log(err);
